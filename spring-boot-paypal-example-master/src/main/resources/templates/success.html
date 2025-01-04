@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Payment Success</title>
+    <style>
+        /* Styling for the success page */
+        body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
+        .container { max-width: 500px; margin: 0 auto; text-align: left; }
+        .price { color: grey; float: right; }
+        h1 { color: #4CAF50; }
+    </style>
+</head>
+<body>
+    <h1>Payment Successful!</h1>
+    <div class="container">
+        <h2>Order Summary</h2>
+        <div id="cart-summary"></div>
+        <hr>
+        <h3>Total: <span id="total-price">$0.00</span></h3>
+    </div>
+
+    <script>
+        function loadOrderDetails() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const cartSummary = document.getElementById("cart-summary");
+            let total = 0;
+
+            cartSummary.innerHTML = cart.map(item => {
+                total += item.price;
+                return `<p>${item.name} <span class="price">$${item.price.toFixed(2)}</span></p>`;
+            }).join('');
+
+            document.getElementById("total-price").textContent = `$${total.toFixed(2)}`;
+        }
+
+        loadOrderDetails();
+    </script>
+</body>
+</html>

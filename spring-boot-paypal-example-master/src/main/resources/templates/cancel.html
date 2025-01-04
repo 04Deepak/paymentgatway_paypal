@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Payment Canceled</title>
+    <style>
+        /* Styling for the cancel page */
+        body { font-family: Arial, sans-serif; padding: 20px; text-align: center; color: #d9534f; }
+        .container { max-width: 500px; margin: 0 auto; text-align: left; }
+        .price { color: grey; float: right; }
+        h1 { color: #d9534f; }
+    </style>
+</head>
+<body>
+    <h1>Payment Canceled</h1>
+    <div class="container">
+        <h2>Order Summary</h2>
+        <div id="cart-summary"></div>
+        <hr>
+        <h3>Total: <span id="total-price">$0.00</span></h3>
+        <p>Your payment was not completed. You can try again or contact support if you need assistance.</p>
+    </div>
+
+    <script>
+        function loadOrderDetails() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const cartSummary = document.getElementById("cart-summary");
+            let total = 0;
+
+            cartSummary.innerHTML = cart.map(item => {
+                total += item.price;
+                return `<p>${item.name} <span class="price">$${item.price.toFixed(2)}</span></p>`;
+            }).join('');
+
+            document.getElementById("total-price").textContent = `$${total.toFixed(2)}`;
+        }
+
+        loadOrderDetails();
+    </script>
+</body>
+</html>
