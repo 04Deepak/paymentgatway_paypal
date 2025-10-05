@@ -1,27 +1,24 @@
-# Stage 1: Build the Maven project
-FROM maven:3.8-openjdk-8 AS builder
-
+# Step 1: Use Maven with JDK 8 to build the application
+FROM maven:3.8.7-openjdk-8 AS build
 WORKDIR /app
 
-# Copy the pom.xml file from the subdirectory
-COPY spring-paypal-example/pom.xml .
+# Copy pom.xml and download dependencies (for faster caching)
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-RUN mvn dependency:go-offline
+# Copy the entire project and build it
+COPY src ./src
+RUN mvn clean package -DskipTests
 
-# Copy the source code from the subdirectory
-COPY spring-paypal-example/src ./src
-
-# Package the application
-RUN mvn package -DskipTests
-
-# Stage 2: Create the final lightweight runtime image
-FROM openjdk:8-jre-slim
-
+# Step 2: Use lightweight JDK image for running the app
+FROM openjdk:8-jre-alpine
 WORKDIR /app
 
-# Copy the built JAR from the correct target folder
-COPY --from=builder /app/target/spring-paypal-example-0.0.1-SNAPSHOT.jar app.jar
+# Copy the JAR file from the build stage
+COPY --from=build /app/target/*.jar app.jar
 
+# Expose application port (default Spring Boot port)
 EXPOSE 9090
 
+# Start the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
