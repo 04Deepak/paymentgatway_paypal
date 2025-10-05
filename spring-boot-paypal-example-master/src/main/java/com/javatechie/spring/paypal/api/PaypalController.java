@@ -32,32 +32,23 @@ public class PaypalController {
 
 
 	@PostMapping("/pay")
-public String payment(HttpServletRequest request, @ModelAttribute("order") Order order) {
-    try {
-        String baseUrl = request.getRequestURL().toString()
-                .replace(request.getRequestURI(), request.getContextPath()) + "/";
-
-        Payment payment = service.createPayment(
-                order.getPrice(),
-                order.getCurrency(),
-                order.getMethod(),
-                order.getIntent(),
-                order.getDescription(),
-                baseUrl + CANCEL_URL,
-                baseUrl + SUCCESS_URL
-        );
-
-        for (Links link : payment.getLinks()) {
-            if (link.getRel().equals("approval_url")) {
-                return "redirect:" + link.getHref();
-            }
-        }
-
-    } catch (PayPalRESTException e) {
-        e.printStackTrace();
-    }
-    return "redirect:/";
-}
+	public String payment(@ModelAttribute("order") Order order) {
+		try {
+			Payment payment = service.createPayment(order.getPrice(), order.getCurrency(), order.getMethod(),
+					order.getIntent(), order.getDescription(), "https://paymentgatway-paypal.onrender.com/" + CANCEL_URL,
+					"https://paymentgatway-paypal.onrender.com/" + SUCCESS_URL);
+			for(Links link:payment.getLinks()) {
+				if(link.getRel().equals("approval_url")) {
+					return "redirect:"+link.getHref();
+				}
+			}
+			
+		} catch (PayPalRESTException e) {
+		
+			e.printStackTrace();
+		}
+		return "redirect:/";
+	}
 
 	
 	 @GetMapping(value = CANCEL_URL)
