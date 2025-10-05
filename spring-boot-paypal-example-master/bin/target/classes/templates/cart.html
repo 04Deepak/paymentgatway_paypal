@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shopping Cart</title>
+    <style>
+        /* Simple styling for layout */
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        input[type="text"], .btn { width: 100%; padding: 10px; margin: 5px 0; }
+        .btn { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        .btn:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Add Items to Cart</h2>
+    <label for="item-name">Item Name</label>
+    <input type="text" id="item-name" placeholder="Enter item name">
+    
+    <label for="item-price">Item Price</label>
+    <input type="text" id="item-price" placeholder="Enter item price">
+    
+    <button onclick="addItem()" class="btn">Add Item to Cart</button>
+    
+    <h3>Items in Cart</h3>
+    <ul id="cart-items"></ul>
+    
+    <button onclick="goToCheckout()" class="btn">Go to Checkout</button>
+</div>
+
+<script>
+    function addItem() {
+        const itemName = document.getElementById("item-name").value;
+        const itemPrice = parseFloat(document.getElementById("item-price").value);
+        
+        if (itemName && !isNaN(itemPrice)) {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart.push({ name: itemName, price: itemPrice });
+            localStorage.setItem("cart", JSON.stringify(cart));
+            displayCart();
+            document.getElementById("item-name").value = '';
+            document.getElementById("item-price").value = '';
+        } else {
+            alert("Please enter a valid item name and price.");
+        }
+    }
+
+    function displayCart() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const cartItems = document.getElementById("cart-items");
+        cartItems.innerHTML = cart.map(item => `<li>${item.name}: $${item.price.toFixed(2)}</li>`).join('');
+    }
+
+    function goToCheckout() {
+        window.location.href = "checkout";
+    }
+
+    // Display cart items on page load
+    displayCart();
+</script>
+</body>
+</html>
+

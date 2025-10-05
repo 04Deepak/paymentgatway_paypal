@@ -3,13 +3,323 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Shopping Cart</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Simple styling for layout */
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        .container { max-width: 500px; margin: 0 auto; }
-        input[type="text"], .btn { width: 100%; padding: 10px; margin: 5px 0; }
-        .btn { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
-        .btn:hover { background-color: #45a049; }
+        /* Universal Box Sizing for easier layout */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        /* General Body and Container Styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5; /* Light grey-blue background */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 550px;
+            width: 100%;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Headings */
+        h2, h3 {
+            color: #2c3e50; /* Darker text for headings */
+            border-bottom: 1px solid #e0e6ed;
+            padding-bottom: 15px;
+            margin-top: 35px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        h2:first-child {
+            margin-top: 0;
+        }
+
+        /* Form Elements */
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: #5c6bc0; /* Accent blue on focus */
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(92, 107, 192, 0.2);
+        }
+        input[type="number"] {
+            -moz-appearance: textfield; /* Firefox */
+        }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .input-group > div {
+            flex: 1;
+        }
+        .input-group input {
+            margin-bottom: 0; /* Remove extra margin */
+        }
+
+        /* Buttons */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px 20px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary { /* Add Item */
+            background-color: #4CAF50; /* Green */
+        }
+        .btn-primary:hover {
+            background-color: #43A047; /* Darker green */
+            transform: translateY(-2px);
+        }
+        .btn-secondary { /* Go to Checkout */
+            background-color: #5c6bc0; /* Accent blue */
+            margin-top: 25px;
+        }
+        .btn-secondary:hover {
+            background-color: #4e59a8; /* Darker blue */
+            transform: translateY(-2px);
+        }
+
+        /* Cart Items List */
+        ul#cart-items {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        ul#cart-items li {
+            display: flex;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e6ed;
+            background-color: #fdfdfd;
+            font-size: 1em;
+        }
+        ul#cart-items li:last-child {
+            border-bottom: none;
+        }
+        .empty-cart-message {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+            font-style: italic;
+        }
+
+        .item-details {
+            flex-grow: 1;
+            margin-right: 15px;
+            min-width: 150px; /* Ensure item name has some space */
+        }
+        .item-name {
+            font-weight: 600;
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .item-price-each {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0; /* Prevent actions from shrinking */
+        }
+        .item-quantity-input {
+            width: 60px;
+            padding: 8px 5px;
+            text-align: center;
+            font-size: 0.95em;
+            border-radius: 5px;
+            margin: 0;
+        }
+        .item-total-price {
+            font-weight: 700;
+            color: #3498db; /* Blue for total price */
+            min-width: 70px;
+            text-align: right;
+        }
+        .remove-btn {
+            background-color: #e74c3c; /* Red */
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background-color 0.3s ease;
+        }
+        .remove-btn:hover {
+            background-color: #c0392b; /* Darker red */
+        }
+
+        /* Cart Total */
+        .cart-total {
+            text-align: right;
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e6ed;
+            color: #2c3e50;
+        }
+        .cart-total span {
+            color: #5c6bc0; /* Accent blue for total price */
+        }
+
+        /* Error messages */
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.85em;
+            margin-top: -10px;
+            margin-bottom: 10px;
+            display: none; /* Hidden by default */
+        }
+        .input-error {
+            border-color: #e74c3c !important;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2) !important;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            .container {
+                margin: 10px auto;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            }
+            h2, h3 {
+                font-size: 1.5em;
+                margin-top: 25px;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+            }
+            .input-group {
+                flex-direction: column; /* Stack inputs vertically */
+                gap: 0; /* Remove gap when stacked */
+            }
+            .input-group > div {
+                margin-bottom: 15px;
+            }
+            .input-group > div:last-child {
+                margin-bottom: 0;
+            }
+
+            ul#cart-items li {
+                flex-direction: column; /* Stack item details and actions */
+                align-items: flex-start;
+                padding: 15px;
+            }
+            .item-details {
+                width: 100%;
+                margin-bottom: 10px;
+                margin-right: 0;
+            }
+            .item-actions {
+                width: 100%;
+                justify-content: space-between; /* Distribute actions */
+                gap: 5px;
+            }
+            .item-quantity-input {
+                width: 50px;
+            }
+            .item-total-price {
+                min-width: auto;
+                text-align: left;
+                flex-grow: 1; /* Allow total price to take available space */
+            }
+            .remove-btn {
+                padding: 7px 10px;
+                font-size: 0.8em;
+            }
+            .cart-total {
+                font-size: 1.2em;
+                padding-top: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px;
+            }
+            h2, h3 {
+                font-size: 1.3em;
+            }
+            .btn {
+                font-size: 1em;
+                padding: 12px 15px;
+            }
+            .item-details, .item-actions {
+                font-size: 0.9em;
+            }
+            .item-quantity-input {
+                width: 45px;
+                padding: 6px 4px;
+            }
+            .remove-btn {
+                padding: 6px 8px;
+            }
+            .cart-total {
+                font-size: 1.1em;
+            }
+        }
     </style>
 </head>
 <body>
@@ -17,48 +327,155 @@
     <h2>Add Items to Cart</h2>
     <label for="item-name">Item Name</label>
     <input type="text" id="item-name" placeholder="Enter item name">
+    <div id="item-name-error" class="error-message">Please enter a valid item name.</div>
     
-    <label for="item-price">Item Price</label>
-    <input type="text" id="item-price" placeholder="Enter item price">
+    <div class="input-group">
+        <div>
+            <label for="item-price">Item Price</label>
+            <input type="text" id="item-price" placeholder="Enter item price">
+            <div id="item-price-error" class="error-message">Please enter a valid price.</div>
+        </div>
+        <div>
+            <label for="item-quantity">Quantity</label>
+            <input type="number" id="item-quantity" value="1" min="1">
+        </div>
+    </div>
     
-    <button onclick="addItem()" class="btn">Add Item to Cart</button>
+    <button onclick="addItem()" class="btn btn-primary">Add Item to Cart</button>
     
     <h3>Items in Cart</h3>
     <ul id="cart-items"></ul>
     
-    <button onclick="goToCheckout()" class="btn">Go to Checkout</button>
+    <div class="cart-total">
+        Total: <span id="cart-total-display">$0.00</span>
+    </div>
+
+    <button onclick="goToCheckout()" class="btn btn-secondary">Go to Checkout</button>
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', displayCart);
+
+    function validateInput(elementId, errorMessageId, validationFn) {
+        const inputElement = document.getElementById(elementId);
+        const errorElement = document.getElementById(errorMessageId);
+        if (!validationFn(inputElement.value)) {
+            inputElement.classList.add('input-error');
+            errorElement.style.display = 'block';
+            return false;
+        } else {
+            inputElement.classList.remove('input-error');
+            errorElement.style.display = 'none';
+            return true;
+        }
+    }
+
     function addItem() {
-        const itemName = document.getElementById("item-name").value;
-        const itemPrice = parseFloat(document.getElementById("item-price").value);
+        const itemNameInput = document.getElementById("item-name");
+        const itemPriceInput = document.getElementById("item-price");
+        const itemQuantityInput = document.getElementById("item-quantity");
+
+        const isValidName = validateInput('item-name', 'item-name-error', (value) => value.trim() !== '');
+        const isValidPrice = validateInput('item-price', 'item-price-error', (value) => {
+            const price = parseFloat(value);
+            return !isNaN(price) && price > 0;
+        });
+
+        if (!isValidName || !isValidPrice) {
+            return;
+        }
+
+        const itemName = itemNameInput.value.trim();
+        const itemPrice = parseFloat(itemPriceInput.value);
+        const itemQuantity = parseInt(itemQuantityInput.value, 10) || 1; // Default to 1 if invalid
+
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+        const existingItemIndex = cart.findIndex(item => item.name.toLowerCase() === itemName.toLowerCase());
+
+        if (existingItemIndex > -1) {
+            cart[existingItemIndex].quantity += itemQuantity;
+        } else {
+            cart.push({ name: itemName, price: itemPrice, quantity: itemQuantity });
+        }
         
-        if (itemName && !isNaN(itemPrice)) {
-            const cart = JSON.parse(localStorage.getItem("cart")) || [];
-            cart.push({ name: itemName, price: itemPrice });
+        localStorage.setItem("cart", JSON.stringify(cart));
+        displayCart();
+        itemNameInput.value = '';
+        itemPriceInput.value = '';
+        itemQuantityInput.value = '1';
+    }
+
+    function updateItemQuantity(index, newQuantityStr) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        if (index >= 0 && index < cart.length) {
+            const newQuantity = parseInt(newQuantityStr, 10);
+            if (!isNaN(newQuantity) && newQuantity > 0) {
+                cart[index].quantity = newQuantity;
+                localStorage.setItem("cart", JSON.stringify(cart));
+                displayCart();
+            } else if (newQuantity === 0) {
+                removeItem(index);
+            } else {
+                alert("Quantity must be a positive number.");
+                // Re-render to revert invalid input on the UI
+                displayCart(); 
+            }
+        }
+    }
+
+    function removeItem(index) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        if (index >= 0 && index < cart.length) {
+            cart.splice(index, 1);
             localStorage.setItem("cart", JSON.stringify(cart));
             displayCart();
-            document.getElementById("item-name").value = '';
-            document.getElementById("item-price").value = '';
-        } else {
-            alert("Please enter a valid item name and price.");
         }
     }
 
     function displayCart() {
         const cart = JSON.parse(localStorage.getItem("cart")) || [];
-        const cartItems = document.getElementById("cart-items");
-        cartItems.innerHTML = cart.map(item => `<li>${item.name}: $${item.price.toFixed(2)}</li>`).join('');
+        const cartItemsList = document.getElementById("cart-items");
+        const cartTotalDisplay = document.getElementById("cart-total-display");
+        let total = 0;
+
+        if (cart.length === 0) {
+            cartItemsList.innerHTML = '<li class="empty-cart-message">Your cart is empty.</li>';
+        } else {
+            cartItemsList.innerHTML = cart.map((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                return `
+                    <li>
+                        <div class="item-details">
+                            <span class="item-name">${item.name}</span>
+                            <span class="item-price-each">($${item.price.toFixed(2)} each)</span>
+                        </div>
+                        <div class="item-actions">
+                            <input type="number" min="1" value="${item.quantity}" 
+                                class="item-quantity-input" 
+                                onchange="updateItemQuantity(${index}, this.value)">
+                            <span style="white-space: nowrap;">x $${item.price.toFixed(2)} = </span>
+                            <strong class="item-total-price">$${itemTotal.toFixed(2)}</strong>
+                            <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+                        </div>
+                    </li>
+                `;
+            }).join('');
+        }
+        
+        cartTotalDisplay.textContent = `$${total.toFixed(2)}`;
     }
 
+ 
     function goToCheckout() {
-        window.location.href = "checkout";
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        if (cart.length > 0) {
+            window.location.href = "checkout";
+        } else {
+            alert("Your cart is empty. Please add items before proceeding to checkout.");
+        }
     }
-
-    // Display cart items on page load
-    displayCart();
 </script>
 </body>
 </html>
-

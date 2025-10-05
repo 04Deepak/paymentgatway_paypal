@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Checkout</title>
+    <style>
+        /* Styling for the checkout page */
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        input[type="text"], .btn { width: 100%; padding: 10px; margin: 5px 0; }
+        .btn { background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+        .btn:hover { background-color: #45a049; }
+        .price { color: grey; float: right; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Checkout</h2>
+    <div id="cart-summary"></div>
+    <hr>
+    <h3>Total: <span id="total-price">$0.00</span></h3>
+    
+    <form method="post" action="/pay">
+    	<label for="price">Total</label>
+         <input type="text" id="price" name="price" value="0">
+         
+        <label for="currency">Currency</label>
+        <input type="text" id="currency" name="currency" placeholder="Enter Currency">
+        
+        <label for="method">Payment Method</label>
+        <input type="text" id="method" name="method" placeholder="Payment Method">
+        
+        <label for="intent">Intent</label>
+        <input type="text" id="intent" name="intent" value="sale">
+        
+        <label for="description">Payment Description</label>
+        <input type="text" id="description" name="description" placeholder="Payment Description">
+        
+        <input type="submit" value="Continue to checkout" class="btn">
+    </form>
+</div>
+
+<script>
+    function loadCart() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const cartSummary = document.getElementById("cart-summary");
+        let total = 0;
+
+        cartSummary.innerHTML = cart.map(item => {
+            total += item.price;
+            return `<p>${item.name} <span class="price">$${item.price.toFixed(2)}</span></p>`;
+        }).join('');
+
+        document.getElementById("total-price").textContent = `$${total.toFixed(2)}`;
+        document.getElementById("price").value = total.toFixed(2);
+    }
+
+    loadCart();
+</script>
+</body>
+</html>
